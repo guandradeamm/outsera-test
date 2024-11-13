@@ -14,9 +14,10 @@ const queryClient = new QueryClient();
 export default function Home() {
   return (
     <QueryClientProvider client={queryClient}>
-      <main className="relative bg-black-100 flex justify-center items-center flex-col mx-auto sm:px-10 px-5 overflow-clip">
+      <main className="relative flex justify-center items-center flex-col mx-auto sm:px-10 px-5 overflow-clip">
         <div className="max-w-7xl w-full">
           <FloatingNav navItems={navItems} />
+
           <div className="grid gap-4 sm:gap-6 xl:grid-cols-2  mt-24">
             <MultipleWinners />
             <StudiosWithWinners />
