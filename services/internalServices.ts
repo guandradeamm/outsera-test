@@ -1,6 +1,6 @@
 //Construcao interna dos servicos de endpoints e metodos APIS
 
-import getConfiguration from "@/config/environment";
+import getConfiguration from "../config/environment";
 import axios, { AxiosResponse } from "axios";
 import {
   FilmByYear,
