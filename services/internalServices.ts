@@ -25,9 +25,20 @@ const getFilmsData = async (
   year: number,
   winner: boolean | string
 ): Promise<AxiosResponse<FilmsData>> => {
-  return dashApi.get(
-    `?page=${page}&size=${size}&winner=${winner}&year=${year}` // Realiza uma requisição GET para obter dados de filmes com os parâmetros fornecidos.
-  );
+  // Monta a URL com os parâmetros, incluindo 'winner' somente se for passado
+  const queryParams: string[] = [
+    `page=${page}`,
+    `size=${size}`,
+    `year=${year}`,
+  ];
+
+  // Adiciona o campo 'winner' na URL somente se ele for definido (não for 'all' ou vazio)
+  if (winner && winner !== "") {
+    queryParams.push(`winner=${winner}`);
+  }
+
+  // Realiza a requisição GET com a URL construída
+  return dashApi.get(`?${queryParams.join("&")}`);
 };
 
 // Função para obter os vencedores múltiplos (anos com múltiplos vencedores)

@@ -28,8 +28,8 @@ const ListMovies = () => {
   // Obtendo os parâmetros da URL para inicializar os estados
   const pageQuery = Number(searchParams?.get("page")) || 0; // Página inicial (padrão: 0)
   const pageSizeQuery = Number(searchParams?.get("pageSize")) || 5; // Tamanho da página (padrão: 5)
-  const yearQuery = Number(searchParams?.get("year")) || 0; // Filtro de ano (padrão: 0)
-  const winnerQuery = searchParams?.get("winner") || "true"; // Filtro de vencedor (padrão: "true")
+  const yearQuery = Number(searchParams?.get("year")) || 2018; // Filtro de ano (padrão: 2018)
+  const winnerQuery = searchParams?.get("winner") || ""; // Filtro de vencedor (não passar parâmetro inicialmente)
 
   // Estados para os filtros e paginação
   const [pageSize, setPageSize] = useState<number>(pageSizeQuery); // Tamanho da página
@@ -46,20 +46,31 @@ const ListMovies = () => {
         pageIndex,
         pageSize,
         yearFilter,
-        winnerFilter === "all" ? "true" : winnerFilter // Se o filtro for "all", considera "true"
+        winnerFilter // Aqui passa o filtro winner apenas se foi modificado
       ),
     { keepPreviousData: true } // Mantém os dados anteriores enquanto os novos estão sendo carregados
   );
 
-  // Função para aplicar os filtros (reseta para a primeira página)
   const handleSearch = () => {
-    setPageIndex(0);
+    // Monta o objeto de parâmetros, garantindo que `year` nunca seja undefined
+    const params: Record<string, string | number> = {
+      page: 0, // Reseta para a primeira página
+      pageSize,
+      year: yearFilter ?? "", // Ou um valor padrão, como uma string vazia ou 0
+    };
+
+    // Se o filtro de vencedor não for vazio, adiciona à URL
+    if (winnerFilter) {
+      params["winner"] = winnerFilter;
+    }
+
+    // Lógica para atualizar a URL
   };
 
   // Filtrando os dados com base no filtro de vencedor
   const filteredData =
-    winnerFilter === "all"
-      ? data?.data?.content // Se o filtro for "all", não filtra os dados
+    winnerFilter === ""
+      ? data?.data?.content // Se não houver filtro de winner, traz todos os dados
       : data?.data?.content?.filter(
           (movie) =>
             (winnerFilter === "true" && movie.winner) || // Filtra filmes vencedores
@@ -87,18 +98,20 @@ const ListMovies = () => {
 
         {/* Filtro por Winner */}
         <FormControl variant="outlined" className="flex-1">
-          <InputLabel>Winner</InputLabel>
-          <Select
-            value={winnerFilter} // Valor atual do filtro
-            onChange={(e) => setWinnerFilter(e.target.value)} // Atualiza o filtro de vencedor
-            label="Winner"
-          >
-            <MenuItem value="all">All</MenuItem> {/* Opção para todos */}
-            <MenuItem value="true">Yes</MenuItem>{" "}
-            {/* Opção para filmes vencedores */}
-            <MenuItem value="false">No</MenuItem>{" "}
-            {/* Opção para filmes não vencedores */}
-          </Select>
+          <FormControl>
+            <InputLabel>Winner</InputLabel>
+            <Select
+              value={winnerFilter || ""} // Se winnerFilter for undefined ou null, exibe o valor padrão ("")
+              onChange={(e) => setWinnerFilter(e.target.value)} // Atualiza o filtro de vencedor
+              label="Winner"
+            >
+              <MenuItem value="">Yes/No</MenuItem> {/* Opção para todos */}
+              <MenuItem value="true">Yes</MenuItem>{" "}
+              {/* Opção para filmes vencedores */}
+              <MenuItem value="false">No</MenuItem>{" "}
+              {/* Opção para filmes não vencedores */}
+            </Select>
+          </FormControl>
         </FormControl>
 
         {/* Botão para aplicar filtros */}
